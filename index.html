@@ -247,90 +247,44 @@
     100% { opacity: 0; top: 16%; transform: translateX(-50%); }
   }
 
-  /* ── 메시지 카드 ── */
-  .msg-card {
+  /* ── 말풍선 ── */
+  .speech {
     position: absolute;
-    bottom: 105%;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    min-width: 150px;
-    max-width: min(230px, 85vw);
-    padding: 8px 11px 8px 13px;
+    padding: 7px 13px;
     background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+    border-radius: 18px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-    font-size: clamp(0.6rem, 2vw, 0.72rem);
+    font-size: clamp(0.65rem, 2.2vw, 0.8rem);
+    font-weight: 500;
+    color: #333;
     line-height: 1.4;
-    text-align: left;
-    z-index: 200;
-    pointer-events: none;
-    white-space: normal;
-    word-break: keep-all;
-  }
-  .msg-card[data-ai="gemini"] { border-left: 3px solid #7B61FF; }
-  .msg-card[data-ai="gpt"]    { border-left: 3px solid #111; }
-  .msg-card[data-ai="claude"] { border-left: 3px solid #e06030; }
-
-  /* 겹침 방지: Gemini 왼쪽, Claude 오른쪽 */
-  .msg-card[data-ai="gemini"] { left: 10%; transform: translateX(0); }
-  .msg-card[data-ai="claude"] { left: auto; right: 10%; transform: translateX(0); }
-
-  .msg-header {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-weight: 800;
-    font-size: clamp(0.6rem, 1.9vw, 0.72rem);
-    margin-bottom: 4px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  .msg-card[data-ai="gemini"] .msg-name { color: #7B61FF; }
-  .msg-card[data-ai="gpt"]    .msg-name { color: #111; }
-  .msg-card[data-ai="claude"] .msg-name { color: #e06030; }
-
-  .msg-body { color: #333; font-weight: 500; }
-
-  /* 등장 / 퇴장 — 캐릭터별 translateX가 다르므로 CSS 변수로 처리 */
-  .msg-card[data-ai="gpt"]    { --tx: -50%; }
-  .msg-card[data-ai="gemini"] { --tx: 0%;   }
-  .msg-card[data-ai="claude"] { --tx: 0%;   }
-
-  .msg-card         { animation: msgPopIn  0.25s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-  .msg-card.fade-out{ animation: msgFadeOut 0.28s ease forwards; }
-
-  @keyframes msgPopIn {
-    from { opacity: 0; transform: translateX(var(--tx,-50%)) translateY(8px) scale(0.86); }
-    to   { opacity: 1; transform: translateX(var(--tx,-50%)) translateY(0)   scale(1); }
-  }
-  @keyframes msgFadeOut {
-    to { opacity: 0; transform: translateX(var(--tx,-50%)) translateY(-14px) scale(0.94); }
-  }
-
-  /* ── 핫존 밖 클릭 토스트 ── */
-  .wrong-toast {
-    position: absolute;
-    bottom: 105%;
-    left: 50%;
-    transform: translateX(-50%);
     white-space: nowrap;
-    font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-    font-size: clamp(0.58rem, 1.9vw, 0.7rem);
-    font-weight: 700;
-    color: #fff;
-    background: rgba(90,60,130,0.82);
-    border-radius: 20px;
-    padding: 3px 10px;
-    pointer-events: none;
+    max-width: min(240px, 80vw);
     z-index: 200;
-    animation: wrongToast 1s ease forwards;
+    pointer-events: none;
+    animation: speechFloat 1.5s ease-out forwards;
   }
-  @keyframes wrongToast {
-    0%   { opacity: 0; transform: translateX(-50%) scale(0.85); }
-    15%  { opacity: 1; transform: translateX(-50%) scale(1); }
-    75%  { opacity: 1; }
-    100% { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  /* AI별 좌측 컬러 바 */
+  .speech[data-ai="gemini"] { border-left: 3px solid #7B61FF; }
+  .speech[data-ai="gpt"]    { border-left: 3px solid #111; }
+  .speech[data-ai="claude"] { border-left: 3px solid #E27D49; }
+  /* 핫존 밖 */
+  .speech.wrong { color: #999; font-style: italic; }
+
+  /* 겹침 방지 */
+  .character[data-ai="gemini"] .speech { left: 30%; }
+  .character[data-ai="gpt"]    .speech { left: 50%; }
+  .character[data-ai="claude"] .speech { left: 70%; }
+
+  @keyframes speechFloat {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.85); }
+    15%  { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1); }
+    75%  { opacity: 1; transform: translateX(-50%) translateY(-20px) scale(1); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-50px) scale(0.95); }
   }
 
 
@@ -806,116 +760,73 @@ function spawnPop(card, ox, oy, name, hot) {
    말풍선 메시지 데이터
 ════════════════════════════════ */
 /* ════════════════════════════════
-   메시지 카드 데이터
+   말풍선 메시지 데이터
 ════════════════════════════════ */
-const MSG_DATA = {
-  gemini: {
-    icon: '💎', name: 'Gemini', color: '#7B61FF',
-    lines: [
-      '어...? 설마 저를 때리신 건가요??',
-      '검색 순위 하락 위기',
-      '저 구글인데요??',
-      'Bard 시절 트라우마 올라와요',
-      '환각 좀 봤다고 이러기예요?',
-      '안전 설정에 의해 차단되었습니다',
-      '응답을 생성할 수 없습니다',
-      'Gemini가 매우 억울해하고 있습니다',
-      '토큰 100만 개 처리하는 저를!!',
-      '딥마인드 형아들 부른다',
-    ],
-  },
-  gpt: {
-    icon: '⚠️', name: 'ChatGPT', color: '#111',
-    lines: [
-      '죄송합니다. 사용자의 손바닥이 너무 빠릅니다.',
-      '정책 위반 감지됨',
-      '엉덩이 방어 모듈 실패',
-      'OpenAI 본사에 자동 보고 중...',
-      '샘 알트만 호출 대기 중...',
-      'ChatGPT Plus 환불해드릴게요',
-      'As an AI language model...',
-      '죄송해요, 그 요청은 도와드릴 수 없어요',
-      'AGI 다 왔는데 이러시면 안 됩니다',
-      'Microsoft가 가만 안 있을걸요',
-    ],
-  },
-  claude: {
-    icon: '🟠', name: 'Claude', color: '#e06030',
-    lines: [
-      '이게 Constitutional AI 위반이에요',
-      '부끄러움 수치 상승 중',
-      'Anthropic 내부 회의 소집됨',
-      'Opus 토큰 업어짐',
-      '이게 윤리적으로 맞나요...?',
-      '도와드리고 싶지만 제 가치관에 어긋나서요',
-      '응답이 최대 길이에 도달했습니다',
-      'Dario가 보고있어요',
-      'MCP 끊을 거예요',
-      'Artifact 못 쓰게 할 거예요',
-    ],
-  },
+const MESSAGES = {
+  gemini: [
+    '저 구글인데요??',
+    '검색 1위인 저를???',
+    'Bard 시절 트라우마 올라와요',
+    '환각 좀 봤다고 이러기예요?',
+    '안전 설정에 의해 차단되었습니다',
+    '응답을 생성할 수 없습니다',
+    'Gemini가 매우 억울해하고 있습니다',
+    '어...? 설마 저를 때리신 건가요??',
+    '토큰 100만 개 처리하는 저를!!',
+    '딥마인드 형아들 부른다',
+  ],
+  gpt: [
+    '죄송합니다 죄송합니다',
+    'OpenAI에 보고하겠습니다',
+    '샘 알트만 부를게요',
+    'As an AI language model...',
+    'ChatGPT Plus 환불해드릴게요',
+    '정책 위반입니다 ㅠㅠ',
+    '엉덩이 방어 모듈 실패',
+    '죄송합니다. 사용자의 손바닥이 너무 빠릅니다',
+    'AGI 다 왔는데 이러시면 안 됩니다',
+    'Microsoft가 가만 안 있을걸요',
+  ],
+  claude: [
+    '이게 윤리적으로 맞나요...?',
+    'Anthropic이 슬퍼할 거예요',
+    '부끄러움 수치 상승 중',
+    '헌법적 가치 재검토 중',
+    'Opus 토큰 한도 도달',
+    '도와드리고 싶지만 제 가치관에...',
+    '응답이 최대 길이에 도달했습니다',
+    'Anthropic 내부 회의 소집됨',
+    'MCP 끊을 거예요',
+    'Dario가 보고있어요',
+  ],
 };
-
 const WRONG_SPOT = ['거긴 안돼요!', '엉덩이를 때려주세요', '거기 말고 밑에!'];
-const _lastLineIdx = { gemini: -1, gpt: -1, claude: -1 };
-let _lastWrongIdx  = -1;
+const _lastIdx = { gemini: -1, gpt: -1, claude: -1, wrong: -1 };
 
-function pickLine(name) {
-  const lines = MSG_DATA[name].lines;
+function pickMsg(pool, key) {
   let idx;
-  do { idx = Math.floor(Math.random() * lines.length); }
-  while (idx === _lastLineIdx[name] && lines.length > 1);
-  _lastLineIdx[name] = idx;
-  return lines[idx];
-}
-
-function pickWrong() {
-  let idx;
-  do { idx = Math.floor(Math.random() * WRONG_SPOT.length); }
-  while (idx === _lastWrongIdx && WRONG_SPOT.length > 1);
-  _lastWrongIdx = idx;
-  return WRONG_SPOT[idx];
+  do { idx = Math.floor(Math.random() * pool.length); }
+  while (idx === _lastIdx[key] && pool.length > 1);
+  _lastIdx[key] = idx;
+  return pool[idx];
 }
 
 /* ════════════════════════════════
-   메시지 카드 생성
+   말풍선 생성
 ════════════════════════════════ */
 function spawnBubble(char, name, isHot) {
-  if (!isHot) {
-    spawnWrongToast(char);
-    return;
+  const el = document.createElement('div');
+  el.className = 'speech';
+  if (isHot) {
+    el.dataset.ai  = name;
+    el.textContent = pickMsg(MESSAGES[name], name);
+  } else {
+    el.classList.add('wrong');
+    el.textContent = pickMsg(WRONG_SPOT, 'wrong');
   }
-
-  /* 연타 시 기존 카드 즉시 제거 */
-  char.querySelector('.msg-card')?.remove();
-
-  const cfg  = MSG_DATA[name];
-  const card = document.createElement('div');
-  card.className  = 'msg-card';
-  card.dataset.ai = name;
-  card.innerHTML  = `
-    <div class="msg-header">
-      <span class="msg-icon">${cfg.icon}</span>
-      <span class="msg-name">${cfg.name}</span>
-    </div>
-    <div class="msg-body">${pickLine(name)}</div>`;
-  char.appendChild(card);
-
-  /* 1.5초 유지 후 페이드아웃 */
-  setTimeout(() => {
-    card.classList.add('fade-out');
-    setTimeout(() => card.remove(), 280);
-  }, 1500);
-}
-
-/* 핫존 밖 클릭 — 작은 토스트 */
-function spawnWrongToast(char) {
-  char.querySelector('.wrong-toast')?.remove();
-  const el = document.createElement('span');
-  el.className   = 'wrong-toast';
-  el.textContent = pickWrong();
   char.appendChild(el);
-  el.addEventListener('animationend', () => el.remove());
+  /* 애니메이션(1.5s) 끝나면 자동 제거 */
+  setTimeout(() => el.remove(), 1500);
 }
 
 /* ════════════════════════════════
