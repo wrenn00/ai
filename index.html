@@ -68,79 +68,51 @@
   .cnt-claude { color: #e06030; }
   .cnt-total  { color: #3a2a5e; }
 
-  /* ── 캐릭터 영역 ── */
-  .characters {
+  /* ── 무대 (단일 카드) ── */
+  .stage {
     width: 100%;
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.10);
+    padding: 28px 20px 20px;
     display: flex;
     flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-end;
     gap: 8px;
-    justify-content: center;
+    position: relative;
+    overflow: visible; /* 말풍선이 위로 삐져나올 수 있게 */
   }
 
-  /* ── AI 카드 ── */
-  .ai-card {
+  /* ── 개별 캐릭터 ── */
+  .character {
     flex: 1 1 0;
     min-width: 0;
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.10);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 6px 14px;
+    gap: 6px;
+    position: relative;
     cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    /* transform은 JS 애니메이션이 직접 제어 — transition 제거 */
-    position: relative;
-    overflow: hidden;
   }
 
-  /* 테마 테두리 */
-  .card-gemini {
-    border: 3px solid transparent;
-    background-clip: padding-box;
-  }
-  .card-gemini::before {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 23px;
-    background: linear-gradient(135deg, #f857a6, #ff5858, #ffb347, #a8ff78, #43e97b, #38f9d7, #4facfe, #a18cd1);
-    z-index: 0;
-    pointer-events: none; /* 클릭 이벤트 흡수 방지 */
-  }
-  .card-gemini .card-bg {
-    position: absolute;
-    inset: 3px;
-    background: #fff;
-    border-radius: 17px;
-    z-index: 1;
-    pointer-events: none;
-  }
-  .card-gemini > *:not(.card-bg) { position: relative; z-index: 2; }
-
-  .card-gpt    { border: 3px solid #111; }
-  .card-claude { border: 3px solid #e06030; }
-
-  /* ── 이미지 래퍼 ── */
+  /* ── 캐릭터 이미지 래퍼 ── */
   .char-img-wrap {
     width: 100%;
-    aspect-ratio: 1 / 1;
-    min-height: 0;
-    max-height: 100%;   /* 세로 긴 이미지가 카드를 밀어내는 현상 방지 */
     position: relative;
-    border-radius: 14px;
-    overflow: hidden;
-    flex-shrink: 1;     /* 필요 시 줄어들 수 있게 */
+    overflow: visible;
   }
   .char-img-wrap img {
     width: 100%;
-    height: 100%;
+    height: auto;
+    display: block;
     object-fit: contain;
     pointer-events: none;
-    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
     transform-origin: center bottom;
   }
 
@@ -151,43 +123,63 @@
     left: 0;
     width: 100%;
     height: 45%;
-    border-radius: 0 0 14px 14px;
     background: transparent;
     transition: background 0.2s ease;
     pointer-events: none;
+    border-radius: 0 0 8px 8px;
   }
-  .ai-card:hover .hot-zone,
-  .ai-card.touching .hot-zone {
-    background: linear-gradient(to top, rgba(255,150,180,0.22) 0%, transparent 100%);
+  .character:hover .hot-zone,
+  .character.touching .hot-zone {
+    background: linear-gradient(to top, rgba(255,150,180,0.25) 0%, transparent 100%);
   }
 
-  /* ── 카드 라벨 ── */
-  .card-label {
-    margin-top: 8px;
-    font-size: clamp(0.68rem, 2.5vw, 0.85rem);
+  /* ── 이름 라벨 ── */
+  .name-tag {
+    font-size: clamp(0.65rem, 2.2vw, 0.82rem);
     font-weight: 700;
     letter-spacing: 0.3px;
-    flex-shrink: 0;
+    text-align: center;
   }
-  .label-gemini { background: linear-gradient(90deg,#a855f7,#f43f5e); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-  .label-gpt    { color: #111; }
-  .label-claude { color: #e06030; }
+  .character[data-ai="gemini"] .name-tag {
+    background: linear-gradient(90deg,#a855f7,#f43f5e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .character[data-ai="gpt"]    .name-tag { color: #111; }
+  .character[data-ai="claude"] .name-tag { color: #e06030; }
 
-  /* ── 배지 ── */
+  /* Gemini: 무지개 테두리를 이름 태그에 작게 표현 */
+  .character[data-ai="gemini"] {
+    padding: 3px;
+    border-radius: 16px;
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(135deg, #f857a6, #ffb347, #43e97b, #4facfe, #a18cd1) border-box;
+    border: 2.5px solid transparent;
+  }
+  .character[data-ai="gpt"]    { border: 2.5px solid #111;    border-radius: 16px; padding: 3px; }
+  .character[data-ai="claude"] { border: 2.5px solid #e06030; border-radius: 16px; padding: 3px; }
+
+  /* ── 배지 (우상단 클릭 수) ── */
   .bang-count {
     position: absolute;
-    top: 6px;
-    right: 8px;
-    font-size: clamp(0.6rem, 2vw, 0.75rem);
+    top: -4px;
+    right: -4px;
+    font-size: clamp(0.58rem, 1.8vw, 0.72rem);
     font-weight: 800;
     background: rgba(0,0,0,0.08);
     border-radius: 20px;
-    padding: 2px 7px;
+    padding: 2px 6px;
     z-index: 5;
+    pointer-events: none;
   }
   .bang-gemini { color: #a855f7; }
   .bang-gpt    { color: #111; }
   .bang-claude { color: #e06030; }
+
+  /* ── 모바일 ── */
+  @media (max-width: 500px) {
+    .stage { padding: 20px 10px 14px; gap: 4px; }
+  }
 
   /* ── 이모지 팝 ── */
   .pop {
@@ -486,37 +478,36 @@
     <span>합계 <span class="cnt cnt-total" id="cnt-total">0</span></span>
   </div>
 
-  <!-- 캐릭터 카드 -->
-  <div class="characters">
+  <!-- 단일 무대 -->
+  <div class="stage">
 
     <!-- Gemini -->
-    <div class="ai-card card-gemini" id="card-gemini" data-ai="gemini">
-      <div class="card-bg"></div>
+    <div class="character" data-ai="gemini">
       <div class="char-img-wrap">
         <img src="images/ge.png" alt="Gemini" draggable="false">
         <div class="hot-zone"></div>
       </div>
-      <span class="card-label label-gemini">Gemini</span>
+      <span class="name-tag">Gemini</span>
       <span class="bang-count bang-gemini" id="badge-gemini">0</span>
     </div>
 
     <!-- GPT -->
-    <div class="ai-card card-gpt" id="card-gpt" data-ai="gpt">
+    <div class="character" data-ai="gpt">
       <div class="char-img-wrap">
         <img src="images/g.png" alt="GPT" draggable="false">
         <div class="hot-zone"></div>
       </div>
-      <span class="card-label label-gpt">GPT</span>
+      <span class="name-tag">GPT</span>
       <span class="bang-count bang-gpt" id="badge-gpt">0</span>
     </div>
 
     <!-- Claude -->
-    <div class="ai-card card-claude" id="card-claude" data-ai="claude">
+    <div class="character" data-ai="claude">
       <div class="char-img-wrap">
         <img src="images/c.png" alt="Claude" draggable="false">
         <div class="hot-zone"></div>
       </div>
-      <span class="card-label label-claude">Claude</span>
+      <span class="name-tag">Claude</span>
       <span class="bang-count bang-claude" id="badge-claude">0</span>
     </div>
 
@@ -597,30 +588,30 @@ function playBang(name) {
 }
 
 /* ════════════════════════════════
-   핫존 판정
+   핫존 판정 — img 기준 하단 45%
 ════════════════════════════════ */
-function isHotZone(card, clientX, clientY) {
-  const wrap = card.querySelector('.char-img-wrap');
-  const r    = wrap.getBoundingClientRect();
+function isHotZone(char, clientX, clientY) {
+  const img = char.querySelector('img');
+  const r   = img.getBoundingClientRect();
   return (clientY - r.top) >= r.height * 0.55;
 }
 
 /* ════════════════════════════════
    이벤트 등록
 ════════════════════════════════ */
-document.querySelectorAll('.ai-card').forEach(card => {
-  card.addEventListener('click', e => {
-    handleInput(card, e.clientX, e.clientY);
+document.querySelectorAll('.character').forEach(char => {
+  char.addEventListener('click', e => {
+    handleInput(char, e.clientX, e.clientY);
   });
 
-  card.addEventListener('touchstart', e => {
+  char.addEventListener('touchstart', e => {
     e.preventDefault();
-    card.classList.add('touching');
+    char.classList.add('touching');
     const t = e.changedTouches[0];
-    handleInput(card, t.clientX, t.clientY);
+    handleInput(char, t.clientX, t.clientY);
   }, { passive: false });
 
-  card.addEventListener('touchend', () => card.classList.remove('touching'));
+  char.addEventListener('touchend', () => char.classList.remove('touching'));
 });
 
 /* ════════════════════════════════
@@ -1012,9 +1003,9 @@ function resetAll() {
   counts.gemini = counts.gpt = counts.claude = 0;
   resetCombo();
   /* 레벨 시각 효과 제거 */
-  document.querySelectorAll('.ai-card').forEach(card => {
-    card.classList.remove('lv2-glow', 'lv3-tilt');
-    card.querySelector('.limit-badge')?.remove();
+  document.querySelectorAll('.character').forEach(char => {
+    char.classList.remove('lv2-glow', 'lv3-tilt');
+    char.querySelector('.limit-badge')?.remove();
   });
   updateUI();
 }
