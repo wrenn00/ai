@@ -109,6 +109,7 @@
     border-radius: 23px;
     background: linear-gradient(135deg, #f857a6, #ff5858, #ffb347, #a8ff78, #43e97b, #38f9d7, #4facfe, #a18cd1);
     z-index: 0;
+    pointer-events: none; /* 클릭 이벤트 흡수 방지 */
   }
   .card-gemini .card-bg {
     position: absolute;
@@ -116,6 +117,7 @@
     background: #fff;
     border-radius: 17px;
     z-index: 1;
+    pointer-events: none;
   }
   .card-gemini > *:not(.card-bg) { position: relative; z-index: 2; }
 
@@ -126,10 +128,12 @@
   .char-img-wrap {
     width: 100%;
     aspect-ratio: 1 / 1;
+    min-height: 0;
+    max-height: 100%;   /* 세로 긴 이미지가 카드를 밀어내는 현상 방지 */
     position: relative;
     border-radius: 14px;
     overflow: hidden;
-    flex-shrink: 0;
+    flex-shrink: 1;     /* 필요 시 줄어들 수 있게 */
   }
   .char-img-wrap img {
     width: 100%;
@@ -137,7 +141,6 @@
     object-fit: contain;
     pointer-events: none;
     display: block;
-    /* squash/shake는 JS Web Animations API로 적용 */
     transform-origin: center bottom;
   }
 
