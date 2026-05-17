@@ -67,6 +67,9 @@
   .cnt-gpt    { color: #222; }
   .cnt-claude { color: #e06030; }
   .cnt-total  { color: #3a2a5e; }
+  .cnt-label-gemini { color: #9c5cf5; font-weight: 700; }
+  .cnt-label-gpt    { color: #222;    font-weight: 700; }
+  .cnt-label-claude { color: #e06030; font-weight: 700; }
 
   /* ── 무대 (단일 카드) ── */
   .stage {
@@ -414,7 +417,6 @@
   }
   .btn:active { transform: scale(0.95); }
   .btn-reset  { background: #fff; color: #555; border: 2px solid #ddd; }
-  .btn-save   { background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; }
   .btn-rank   { background: linear-gradient(135deg,#f7971e,#ffd200); color: #333; }
 
   /* ── 랭킹 모달 ── */
@@ -469,11 +471,11 @@
 
   <!-- 카운터 바 -->
   <div class="counter-bar">
-    <span>💎 Gemini <span class="cnt cnt-gemini" id="cnt-gemini">0</span></span>
+    <span class="cnt-label cnt-label-gemini">Gemini <span class="cnt cnt-gemini" id="cnt-gemini">0</span></span>
     <span class="sep">|</span>
-    <span>⚫ GPT <span class="cnt cnt-gpt" id="cnt-gpt">0</span></span>
+    <span class="cnt-label cnt-label-gpt">GPT <span class="cnt cnt-gpt" id="cnt-gpt">0</span></span>
     <span class="sep">|</span>
-    <span>🟠 Claude <span class="cnt cnt-claude" id="cnt-claude">0</span></span>
+    <span class="cnt-label cnt-label-claude">Claude <span class="cnt cnt-claude" id="cnt-claude">0</span></span>
     <span class="sep">|</span>
     <span>합계 <span class="cnt cnt-total" id="cnt-total">0</span></span>
   </div>
@@ -516,7 +518,6 @@
   <!-- 컨트롤 -->
   <div class="controls">
     <button class="btn btn-reset" onclick="resetAll()">🔄 전체 리셋</button>
-    <button class="btn btn-save"  onclick="savePhoto()">📸 사진 저장</button>
     <button class="btn btn-rank"  onclick="openRank()">🏆 랭킹 보기</button>
   </div>
 </div>
@@ -1010,31 +1011,6 @@ function resetAll() {
   updateUI();
 }
 
-/* ════════════════════════════════
-   사진 저장
-════════════════════════════════ */
-function savePhoto() {
-  if (window._savingPhoto) return;
-  window._savingPhoto = true;
-  const load = () => new Promise(res => {
-    if (window.html2canvas) { res(); return; }
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.onload = res;
-    document.head.appendChild(s);
-  });
-  load().then(() => {
-    html2canvas(document.getElementById('main-wrapper'), {
-      backgroundColor: null, scale: 2, useCORS: true
-    }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = 'ai_pangpang_' + Date.now() + '.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      window._savingPhoto = false;
-    });
-  });
-}
 
 /* ════════════════════════════════
    랭킹
@@ -1042,7 +1018,7 @@ function savePhoto() {
 function openRank() {
   const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
   const medals = ['🥇','🥈','🥉'];
-  const labels = { gemini:'💎 Gemini', gpt:'⚫ GPT', claude:'🟠 Claude' };
+  const labels = { gemini:'Gemini', gpt:'GPT', claude:'Claude' };
   const scoreClass = { gemini:'score-gemini', gpt:'score-gpt', claude:'score-claude' };
   const total = counts.gemini + counts.gpt + counts.claude;
 
