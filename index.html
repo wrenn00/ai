@@ -122,19 +122,12 @@
   /* ── 핫존 (하단 45%) ── */
   .hot-zone {
     position: absolute;
-    top: 50%;           /* 이미지 위에서 50% 지점 시작 */
+    top: 42%;
     bottom: auto;
     left: 15%;
     right: 15%;
-    height: 20%;        /* 50~70% 구간 */
+    height: 20%;
     pointer-events: none;
-    border-radius: 8px;
-    background: transparent;
-    transition: background 0.2s ease;
-  }
-  .character:hover .hot-zone,
-  .character.touching .hot-zone {
-    background: linear-gradient(to bottom, rgba(255,150,180,0.25) 0%, transparent 100%);
   }
 
   /* ── 이름 라벨 ── */
