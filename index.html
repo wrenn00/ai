@@ -122,18 +122,19 @@
   /* ── 핫존 (하단 45%) ── */
   .hot-zone {
     position: absolute;
-    bottom: 18%;        /* 맨 아래가 아니라 아래서 18% 띄움 → 발 제외 */
-    left: 5%;
-    right: 5%;
-    height: 28%;        /* 엉덩이 폭만큼 */
-    background: transparent;
-    transition: background 0.2s ease;
+    top: 50%;           /* 이미지 위에서 50% 지점 시작 */
+    bottom: auto;
+    left: 15%;
+    right: 15%;
+    height: 20%;        /* 50~70% 구간 */
     pointer-events: none;
     border-radius: 8px;
+    background: transparent;
+    transition: background 0.2s ease;
   }
   .character:hover .hot-zone,
   .character.touching .hot-zone {
-    background: linear-gradient(to top, rgba(255,150,180,0.30) 0%, transparent 100%);
+    background: linear-gradient(to bottom, rgba(255,150,180,0.25) 0%, transparent 100%);
   }
 
   /* ── 이름 라벨 ── */
@@ -582,11 +583,14 @@ function playBang(name) {
    핫존 판정 — img 기준 하단 45%
 ════════════════════════════════ */
 function isHotZone(char, clientX, clientY) {
-  const img = char.querySelector('img');
-  const r   = img.getBoundingClientRect();
-  const rel = (clientY - r.top) / r.height; /* 0(상단) ~ 1(하단) */
-  /* CSS hot-zone: bottom 18% ~ bottom 46% = 상단 54% ~ 82% */
-  return rel >= 0.54 && rel <= 0.82;
+  /* .hot-zone 엘리먼트의 실제 화면 좌표를 직접 읽음
+     → CSS top/height만 바꾸면 JS 수정 없이 자동 동기화 */
+  const zone = char.querySelector('.hot-zone');
+  const r    = zone.getBoundingClientRect();
+  return (
+    clientY >= r.top    && clientY <= r.bottom &&
+    clientX >= r.left   && clientX <= r.right
+  );
 }
 
 /* ════════════════════════════════
