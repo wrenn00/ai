@@ -490,7 +490,7 @@
     <div class="ai-card card-gemini" id="card-gemini" data-ai="gemini">
       <div class="card-bg"></div>
       <div class="char-img-wrap">
-        <img src="images/gemini.png" alt="Gemini" draggable="false">
+        <img src="images/ge.png" alt="Gemini" draggable="false">
         <div class="hot-zone"></div>
       </div>
       <span class="card-label label-gemini">Gemini</span>
@@ -500,7 +500,7 @@
     <!-- GPT -->
     <div class="ai-card card-gpt" id="card-gpt" data-ai="gpt">
       <div class="char-img-wrap">
-        <img src="images/gpt.png" alt="GPT" draggable="false">
+        <img src="images/g.png" alt="GPT" draggable="false">
         <div class="hot-zone"></div>
       </div>
       <span class="card-label label-gpt">GPT</span>
@@ -510,7 +510,7 @@
     <!-- Claude -->
     <div class="ai-card card-claude" id="card-claude" data-ai="claude">
       <div class="char-img-wrap">
-        <img src="images/claude.png" alt="Claude" draggable="false">
+        <img src="images/c.png" alt="Claude" draggable="false">
         <div class="hot-zone"></div>
       </div>
       <span class="card-label label-claude">Claude</span>
@@ -935,7 +935,8 @@ function spawnBubble(card, name, isHot) {
     ? pickMsg(MESSAGES[name], name)
     : pickMsg(WRONG_SPOT, 'wrong');
   const cls   = isHot ? `bubble-${name}` : 'bubble-wrong';
-  const imgSrc = isHot ? `images/${name}.png` : null;
+  const IMG = { gemini: 'ge.png', gpt: 'g.png', claude: 'c.png' };
+  const imgSrc = isHot ? `images/${IMG[name]}` : null;
 
   const el = document.createElement('div');
   el.className = `speech-bubble ${cls} anim-in`;
